@@ -2,7 +2,6 @@
 #define COMPORTEMENT_H
 
 #include "UImg.h"
-#include "Bestiole.h"
 
 #include <vector>
 
@@ -22,7 +21,7 @@ public:
         Bestiole* plusProche
     ) = 0;
 
-    virtual const T* getCouleur() const = 0;
+    virtual Couleur getCouleur() const = 0;
 
 };
 
