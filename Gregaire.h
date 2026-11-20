@@ -1,17 +1,19 @@
 #include "Comportement.h"
+#include "Couleur.h"
 
-//Interface
-class Gregaire : public Comportement{
-    private:
-        T * couleur;
-    public
-        Gregaire();
-        ~Greagaire();
+class Gregaire : public Comportement {
+public:
+    void agir(
+        Bestiole& b,
+        const std::vector<Bestiole*>& proches,
+        Bestiole* plusProche
+    ) override;
 
-        void agir(b, proches, plusProche); 
-        void Comportement * clone();
-        T getCouleur(); //pour différencier les bestioles dans l'interface
+    Comportement* clone() const override {
+        return new Gregaire(*this);
+    }
 
-
-
-}
+    Couleur getCouleur() const override {
+        return {0, 255, 0};
+    }
+};
