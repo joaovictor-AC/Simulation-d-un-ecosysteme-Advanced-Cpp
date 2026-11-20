@@ -1,4 +1,7 @@
 class Nageoires{
-    double nu; // coeff vitesse
+    private:
+        double nu; // coeff vitesse
+    public:
+        double getNu() const;
 }
 

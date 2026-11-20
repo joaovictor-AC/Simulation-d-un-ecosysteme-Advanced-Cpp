@@ -1,5 +1,9 @@
 
 class Oreilles{
-    double distance;
-    double gamma;
+    private:
+        double distance;
+        double gamma;
+    public:
+        double getDistance() const;
+        double getGamma() const;
 }
