@@ -6,6 +6,8 @@
 
 #include <vector>
 
+class Bestiole;
+
 class Comportement {
 
 public:
