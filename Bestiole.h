@@ -52,9 +52,11 @@ public :
  
    void initCoords( int xLim, int yLim );
  
-   bool vieillir( void );             // +1 pas ; vrai si elle vient de mourir de vieillesse
+   void vieillir( void ) { ++age; }                                  // acción: solo envejece
+   bool estTropVieille( void ) const { return age >= ageLimite; }    // pregunta: no modifica nada
    void mourir( void ) { vivante = false; }
    bool estVivante( void ) const { return vivante; }
+
    void rebondir( void );             // repart dans la direction opposée
  
    // ---- Accesseurs utilisés par le Milieu ----
