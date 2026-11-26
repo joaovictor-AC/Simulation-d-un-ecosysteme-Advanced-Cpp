@@ -1,9 +1,8 @@
-
-class Oreilles{
-    private:
-        double distance;
-        double gamma;
-    public:
-        double getDistance() const;
-        double getGamma() const;
-}
+// Oreilles.h
+class Oreilles {
+public :
+   double distance;
+   double gamma;
+   Oreilles() : distance(0.), gamma(0.) {}
+   Oreilles( double d, double g ) : distance(d), gamma(g) {}
+};
