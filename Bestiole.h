@@ -29,24 +29,21 @@ private :
    double            cumulX, cumulY;
    double            orientation;
    double            vitesse;
-   double            taille;          // demi grand axe de l'ellipse, propre à chaque bestiole
+   double            taille;          
  
-   int               age;             // en pas de simulation
-   int               ageLimite;       // tiré au hasard à la naissance
+   int               age;             
+   int               ageLimite;       
    bool              vivante;
  
-   T                 couleur[ 3 ];    // tableau simple : copié automatiquement, rien à libérer
+   T                 couleur[ 3 ];    // vector normal, el puntero daba problemas de compilacion
  
 private :
    void bouge( int xLim, int yLim );
  
 public :
    Bestiole( void );
-   // Copie, affectation et destruction générées par le compilateur :
-   // copie EXACTE (même identité). Utilisées par std::vector quand il
-   // déplace ses éléments. Pour un vrai clonage, utiliser cloner().
  
-   Bestiole cloner( void ) const;    // copie conforme mais nouvelle identité
+   Bestiole cloner( void ) const;    // copia una bestiole pero cambia id
  
    void action( Milieu & monMilieu );
    void draw( UImg & support );
@@ -55,7 +52,6 @@ public :
  
    void initCoords( int xLim, int yLim );
  
-   // ---- Cycle de vie ----
    bool vieillir( void );             // +1 pas ; vrai si elle vient de mourir de vieillesse
    void mourir( void ) { vivante = false; }
    bool estVivante( void ) const { return vivante; }
