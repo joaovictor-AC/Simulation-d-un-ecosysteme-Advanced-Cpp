@@ -38,6 +38,17 @@ void Milieu::step( void )
 
    } // for
 
+  for ( std::vector<Bestiole>::iterator it = listeBestioles.begin(); it != listeBestioles.end(); ++it )
+  {
+   if ( !it->estVivante() ) continue;   // ya murió en este paso (colisión)
+
+   it->vieillir();
+   if ( it->estTropVieille() ) {
+      it->mourir();
+      ++mortsAge;                       // se sabe la causa
+   }
+  }
+
 }
 
 
