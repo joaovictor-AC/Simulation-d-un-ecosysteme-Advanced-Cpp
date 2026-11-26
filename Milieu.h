@@ -20,12 +20,18 @@ private :
    int                     width, height;
    std::vector<Bestiole>   listeBestioles;
 
+   int   mortsAge;
+   int   mortsCollision;    
+
 public :
    Milieu( int _width, int _height );
    ~Milieu( void );
 
    int getWidth( void ) const { return width; };
    int getHeight( void ) const { return height; };
+
+   int getMortsAge( void ) const { return mortsAge; }
+   int getMortsCollision( void ) const { return mortsCollision; }
 
    void step( void );
 
