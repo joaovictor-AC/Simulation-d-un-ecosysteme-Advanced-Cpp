@@ -41,10 +41,10 @@ void Milieu::step( void )
 
   for ( std::vector<Bestiole>::iterator it = listeBestioles.begin(); it != listeBestioles.end(); ++it )
   {
-   if ( !it->estVivante() ) continue;   // ya murió en este paso (colisión)
+   if ( it->estMorte() ) continue;   // ya murió en este paso (colisión)
 
    it->vieillir();
-   if ( it->estTropVieille() ) {
+   if ( it->getAge() >= it->getAgeLimite() ) {
       it->mourir();
       ++mortsAge;                       // se sabe la causa
    }

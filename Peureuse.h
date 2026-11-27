@@ -7,6 +7,11 @@
 
 class Peureuse : public Comportement
 {
+private:
+   bool init = false;
+   double vitesseCroisiere = 0.;
+   int toursFuite = 0;
+
 public :
    void agir( Bestiole & b,
               const std::vector<Bestiole*> & proches,

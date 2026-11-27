@@ -11,9 +11,9 @@ void Peureuse::agir( Bestiole & b, const std::vector<Bestiole*> & proches, Besti
       if ( --toursFuite == 0 )
          b.setVitesse( vitesseCroisiere );                   // retour à la croisière
    }
-   else if ( static_cast<int>( proches.size() ) > NB_MAX ) { // déclenchement
+   else if ( static_cast<int>( proches.size() ) > Bestiole::NB_MAX ) { // déclenchement
       b.setOrientation( b.getOrientation() + M_PI );
-      b.setVitesse( vitesseCroisiere * FACTEUR_FUITE );
-      toursFuite = DUREE_FUITE;
+      b.setVitesse( vitesseCroisiere * Bestiole::FACTEUR_FUITE );
+      toursFuite = Bestiole::DUREE_FUITE;
    }
 }

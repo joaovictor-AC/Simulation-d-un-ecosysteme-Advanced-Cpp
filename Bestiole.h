@@ -1,79 +1,116 @@
-#ifndef _BESTIOLES_H_
-#define _BESTIOLES_H_
- 
- 
+#ifndef BESTIOLE_H
+#define BESTIOLE_H
 #include "UImg.h"
- 
-#include <iostream>
- 
-using namespace std;
- 
- 
+#include "Comportement.h"
+#include "Yeux.h"
+#include "Oreilles.h"
+#include "Carapace.h"
+#include "Nageoires.h"
+#include "Camouflage.h"
+#include <memory>
+#include <vector>
+enum class TypeEquipement
+{
+    YEUX,
+    OREILLES,
+    CARAPACE,
+    NAGEOIRES,
+    CAMOUFLAGE
+};
 class Milieu;
- 
- 
+class Bestiole;
+struct Detection
+{
+    std::vector<Bestiole *> proches;
+    Bestiole *plusProche = nullptr;
+};
 class Bestiole
 {
- 
-private :
-   static const double     MAX_VITESSE;
-   static const double     LIMITE_VUE;
-   static const double     TAILLE_MIN, TAILLE_MAX;
-   static const int        AGE_MIN, AGE_MAX;
- 
-   static int              next;
- 
-private :
-   int               identite;
-   int               x, y;
-   double            cumulX, cumulY;
-   double            orientation;
-   double            vitesse;
-   double            taille;          
- 
-   int               age;             
-   int               ageLimite;       
-   bool              vivante;
- 
-   T                 couleur[ 3 ];    // vector normal, el puntero daba problemas de compilacion
- 
-private :
-   void bouge( int xLim, int yLim );
- 
-public :
-   Bestiole( void );
- 
-   Bestiole cloner( void ) const;    // copia una bestiole pero cambia id
- 
-   void action( Milieu & monMilieu );
-   void draw( UImg & support );
- 
-   bool jeTeVois( const Bestiole & b ) const;
- 
-   void initCoords( int xLim, int yLim );
- 
-   void vieillir( void ) { ++age; }                                  // acción: solo envejece
-   bool estTropVieille( void ) const { return age >= ageLimite; }    // pregunta: no modifica nada
-   void mourir( void ) { vivante = false; }
-   bool estVivante( void ) const { return vivante; }
+private:
+    static const double MAX_VITESSE;
+    static const double LIMITE_VUE;
+    static const double TAILLE_MIN, TAILLE_MAX;
+    static const int AGE_MIN, AGE_MAX;
 
-   void rebondir( void );             // repart dans la direction opposée
- 
-   // ---- Accesseurs utilisés par le Milieu ----
-   int    getIdentite( void ) const { return identite; }
-   int    getX( void ) const { return x; }
-   int    getY( void ) const { return y; }
-   double getOrientation( void ) const { return orientation; }
-   double getVitesse( void ) const { return vitesse; }
-   double getTaille( void ) const { return taille; }
-   int    getAge( void ) const { return age; }
-   void setOrientation( double o );
-   void setVitesse( double v ) { vitesse = v; }
- 
-   friend bool operator==( const Bestiole & b1, const Bestiole & b2 );
- 
+    static int next;
+
+private:
+    int id;
+    int age = 0;
+    int ageLimite;
+    double x = 0., y = 0.; // Positions reelles pour conserver les petits deplacements.
+    double orientation, vitesse, vitesseCroisiere;
+    double taille, probaMortCollision;
+    bool marqueeMorte = false;
+    std::unique_ptr<Comportement> comportement;
+    std::unique_ptr<Yeux> yeux;
+    std::unique_ptr<Oreilles> oreilles;
+    std::unique_ptr<Carapace> carapace;
+    std::unique_ptr<Nageoires> nageoires;
+    std::unique_ptr<Camouflage> camouflage;
+
+public:
+    // Parametres communs aux comportements : valeurs dans Bestiole.cpp.
+    static const int NB_MAX;
+    static const int DUREE_FUITE;
+    static const double FACTEUR_FUITE;
+    static const int HORIZON;
+    static const int DUREE_PERSONNALITE_MIN, DUREE_PERSONNALITE_MAX;
+
+    Bestiole(); // Attributs et caracteristiques des cinq equipements tires au hasard.
+    explicit Bestiole(int ageLimite, double vitesseCroisiere = 2.,
+                      double taille = 16., double probaMortCollision = 0.1);
+    Bestiole(const Bestiole &);            // Nouvelle identite, copie profonde de l'etat.
+    Bestiole &operator=(const Bestiole &); // Conserve l'identite du destinataire.
+    Bestiole(Bestiole &&) noexcept;
+    Bestiole &operator=(Bestiole &&) noexcept;
+    ~Bestiole();
+    Bestiole clone() const; // Nouveau-ne : age nul et nouvel identifiant.
+
+    void action(Milieu &);
+    void agir(const Detection &);
+    void bouge(int xLim, int yLim);
+    void collision(const Bestiole &);
+    void vieillir();
+    void mourir() { marqueeMorte = true; }
+    bool estMorte() const { return marqueeMorte; }
+    double distance(const Bestiole &) const;
+    bool enCollision(const Bestiole &) const;
+    bool jeTeVois(const Bestiole &) const; // Yeux OU oreilles.
+    Detection detecterProches(std::vector<Bestiole> &bestioles) const;
+    std::vector<const Bestiole *> detecterCollisions(const std::vector<Bestiole> &) const;
+
+    void setComportement(std::unique_ptr<Comportement>);
+    void setComportement(const Comportement &);
+    void setOrientation(double angle);
+    void setVitesse(double valeur);
+    void setPosition(double px, double py);
+
+    int getId() const { return id; }
+    int getAge() const { return age; }
+    int getAgeLimite() const { return ageLimite; }
+    double getX() const { return x; }
+    double getY() const { return y; }
+    double getTaille() const { return taille; }
+    double getOrientation() const { return orientation; }
+    double getVitesse() const { return vitesse; }
+    double getVitesseCroisiere() const { return vitesseCroisiere; }
+    double getVitesseEffective() const;
+    double getProbaMortCollision() const;
+    double getCamouflage() const;
+    const Comportement &getComportement() const;
+
+    bool possede(TypeEquipement type) const;
+    // Ouverture des yeux en radians (pi/2 par defaut).
+
+    void equiperYeux(double distance = 80., double angle = 1.5707963267948966, double gamma = 0.8);
+    void equiperOreilles(double distance = 50., double gamma = 0.6);
+    void equiperCarapace(double omega = 2., double eta = 1.5);
+    void equiperNageoires(double nu = 1.5);
+    void equiperCamouflage(double valeur = 0.5);
+
+    void initCoords(int xLim, int yLim);
+    void draw(UImg &) const;
+    friend bool operator==(const Bestiole &a, const Bestiole &b) { return a.id == b.id; }
 };
- 
- 
 #endif
- 

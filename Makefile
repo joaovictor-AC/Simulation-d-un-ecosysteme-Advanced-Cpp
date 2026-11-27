@@ -1,10 +1,10 @@
-main : main.cpp Aquarium.o Bestiole.o Milieu.o Gregaire.o Kamikaze.o Peureuse.o Prevoyante.o PersoMultiples.o Yeux.o Oreilles.o
-	g++ -Wall -std=c++11 -o main main.cpp Aquarium.o Bestiole.o Milieu.o Gregaire.o Kamikaze.o Peureuse.o Prevoyante.o PersoMultiples.o Yeux.o Oreilles.o -I . -lX11 -lpthread
+main : main.cpp Aquarium.o Bestiole.o Milieu.o Gregaire.o Kamikaze.o Peureuse.o Prevoyante.o PersoMultiples.o
+	g++ -Wall -std=c++11 -o main main.cpp Aquarium.o Bestiole.o Milieu.o Gregaire.o Kamikaze.o Peureuse.o Prevoyante.o PersoMultiples.o -I . -lX11 -lpthread
 
 Aquarium.o : Aquarium.h Aquarium.cpp
 	g++ -Wall -std=c++11  -c Aquarium.cpp -I .
 
-Bestiole.o : Bestiole.h Bestiole.cpp
+Bestiole.o : Bestiole.h Bestiole.cpp Comportement.h Gregaire.h Aleatoire.h Yeux.h Oreilles.h Carapace.h Nageoires.h Camouflage.h
 	g++ -Wall -std=c++11  -c Bestiole.cpp -I .
 
 Milieu.o : Milieu.h Milieu.cpp
@@ -25,11 +25,7 @@ Prevoyante.o : Prevoyante.h Prevoyante.cpp Comportement.h
 PersoMultiples.o : PersoMultiples.h PersoMultiples.cpp Comportement.h
 	g++ -Wall -std=c++11  -c PersoMultiples.cpp -I .
 
-Yeux.o : Yeux.h Yeux.cpp
-	g++ -Wall -std=c++11  -c Yeux.cpp -I .
-
-Oreilles.o : Oreilles.h Oreilles.cpp
-	g++ -Wall -std=c++11  -c Oreilles.cpp -I .
-
 clean:
 	rm -rf *.o main
+# Recompiler les utilisateurs des constantes quand Bestiole.h change.
+Aquarium.o Milieu.o Gregaire.o Kamikaze.o Peureuse.o Prevoyante.o PersoMultiples.o: Bestiole.h

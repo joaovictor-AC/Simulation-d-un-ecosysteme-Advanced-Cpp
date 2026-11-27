@@ -7,7 +7,19 @@
 
 class PersoMultiples : public Comportement
 {
+private:
+   Comportement* courant;
+   int compteur;
+   double vitesseNormale;
+   bool init;
+   void changer(Bestiole& b);
+
 public :
+   PersoMultiples();
+   PersoMultiples(const PersoMultiples& autre);
+   ~PersoMultiples() override;
+   PersoMultiples& operator=(const PersoMultiples&) = delete;
+
    void agir( Bestiole & b,
               const std::vector<Bestiole*> & proches,
               Bestiole * plusProche ) override;

@@ -1,3 +1,5 @@
+#ifndef OREILLES_H
+#define OREILLES_H
 // Oreilles.h
 class Oreilles {
 public :
@@ -6,3 +8,4 @@ public :
    Oreilles() : distance(0.), gamma(0.) {}
    Oreilles( double d, double g ) : distance(d), gamma(g) {}
 };
+#endif
