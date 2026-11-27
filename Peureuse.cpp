@@ -3,9 +3,12 @@
 #include "Bestiole.h"
 #include <cmath>
 
-void Peureuse::agir( Bestiole & b, const std::vector<Bestiole*> & proches, Bestiole * plusProche )
+void Peureuse::agir(
+    Bestiole &b,
+    const std::vector<Bestiole *> &proches,
+    Bestiole *)
 {
-   if ( static_cast<int>( proches.size() ) > NB_MAX ) {
+   if ( static_cast<int>( proches.size() ) > Bestiole::NB_MAX ) {
       b.setOrientation( b.getOrientation() + M_PI );   // direction opposée
       // b.setVitesseEffective( getVitesseMax(MAX_VITESSE) );                  // vive allure
    }
