@@ -4,6 +4,9 @@
 #include "Aleatoire.h"
 #include "Gregaire.h"
 #include "Kamikaze.h"
+#include "Peureuse.h"
+#include "PersoMultiples.h"
+#include "Prevoyante.h"
 #include <cmath>
 #include <limits>
 #include <stdexcept>
@@ -24,28 +27,27 @@ Bestiole::Bestiole()
     : Bestiole(Aleatoire::entier(1000, 2000), Aleatoire::reel(1., 4.),
                Aleatoire::reel(12., 20.), Aleatoire::reel(0.05, 0.30))
 {
-    equiperYeux(Aleatoire::reel(50., 200.), Aleatoire::reel(PI / 6., 2. * PI / 3.),
+
+    equiperYeux(Aleatoire::reel(0., 200.), Aleatoire::reel(PI / 6., 2. * PI / 3.),
                 Aleatoire::reel(0.5, 1.));
-    equiperOreilles(Aleatoire::reel(50., 250.), Aleatoire::reel(0.5, 1.));
+    equiperOreilles(Aleatoire::reel(0., 250.), Aleatoire::reel(0.5, 1.));
     equiperNageoires(Aleatoire::reel(1., 2.));
     equiperCarapace(Aleatoire::reel(1., 3.), Aleatoire::reel(1., 2.));
     equiperCamouflage(Aleatoire::reel(0.1, 0.9));
 }
 
-/////////////////////////////////////////////////////////////////////////////
-//// VERIFIER, COMMENCER AVEC LE COMPORTEMENT GREGAIRE
+
 
 Bestiole::Bestiole(int ageLimite, double vitesseCroisiere, double taille, double probaMortCollision)
     : id(++next), ageLimite(ageLimite), orientation(Aleatoire::reel(0., 2. * PI)),
       vitesse(vitesseCroisiere), vitesseCroisiere(vitesseCroisiere),
-      taille(taille), probaMortCollision(probaMortCollision), comportement(new Kamikaze)
+      taille(taille), probaMortCollision(probaMortCollision), comportement(new PersoMultiples)
 {
     if (ageLimite <= 0 || !std::isfinite(vitesseCroisiere) || vitesseCroisiere < 0. ||
         !std::isfinite(taille) || taille <= 0. || !std::isfinite(probaMortCollision) ||
         probaMortCollision < 0. || probaMortCollision > 1.)
         throw std::invalid_argument("Parametres de Bestiole invalides");
 }
-////////////////////////////////////////////////////////////////////////////
 
 Bestiole::Bestiole(const Bestiole &b)
     : id(++next), age(b.age), ageLimite(b.ageLimite), x(b.x), y(b.y), orientation(b.orientation),
@@ -78,14 +80,30 @@ Bestiole Bestiole::clone() const
     enfant.marqueeMorte = false;
     return enfant;
 }
-void Bestiole::action(Milieu &milieu)
+// void Bestiole::action(Milieu &milieu)
+// {
+//     if (estMorte())
+//         return;
+//     // Le Milieu initial n'expose pas sa population : il gere seulement le mouvement.
+//     // Les interactions restent disponibles via detecterProches(), agir() et collision().
+//     bouge(milieu.getWidth(), milieu.getHeight());
+// }
+
+void Bestiole::action( Milieu & monMilieu )
 {
-    if (estMorte())
-        return;
-    // Le Milieu initial n'expose pas sa population : il gere seulement le mouvement.
-    // Les interactions restent disponibles via detecterProches(), agir() et collision().
-    bouge(milieu.getWidth(), milieu.getHeight());
+   if ( estMorte() ) return;
+
+   // 1. perception : la bestiole filtre la population du milieu avec ses capteurs
+   Detection d = detecterProches( monMilieu.getBestioles() );
+
+   // 2. décision : le comportement modifie orientation et/ou facteur de vitesse
+   if ( comportement )
+      comportement->agir( *this, d.proches, d.plusProche );
+
+   // 3. déplacement : lit l'orientation et la vitesse effective déjà modifiées
+   bouge( monMilieu.getWidth(), monMilieu.getHeight() );
 }
+
 void Bestiole::agir(const Detection &detection)
 {
     if (!estMorte())
