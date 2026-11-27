@@ -1,30 +1,25 @@
+// Prevoyante.cpp
 #include "Prevoyante.h"
 #include "Bestiole.h"
 #include <cmath>
 
-void Prevoyante::agir(Bestiole& b, const std::vector<Bestiole*>& proches, Bestiole*)
+void Prevoyante::agir( Bestiole & b, const std::vector<Bestiole*> & proches, Bestiole * )
 {
-    const double bx = std::cos(b.getOrientation());
-    const double by = -std::sin(b.getOrientation());
-    const double pi = std::acos(-1.);
+   for ( Bestiole * o : proches ) {
+      double seuil = ( b.getTaille() + o->getTaille() ) / 2.;
 
-    for (const Bestiole* o : proches) {
-        const double seuil = (b.getTaille() + o->getTaille()) / 2.;
+      for ( int k = 1; k <= Bestiole::HORIZON; ++k ) {
+         // positions dans k pas (repère image : y vers le bas)
+         double mx = b.getX() + std::cos( b.getOrientation() ) * b.getVitesseEffective() * k;
+         double my = b.getY() - std::sin( b.getOrientation() ) * b.getVitesseEffective() * k;
+         double ox = o->getX() + std::cos( o->getOrientation() ) * o->getVitesseEffective() * k;
+         double oy = o->getY() - std::sin( o->getOrientation() ) * o->getVitesseEffective() * k;
 
-        for (int k = 1; k <= Bestiole::HORIZON; ++k) {
-            // Positions des deux bestioles au meme instant futur.
-            const double mx = b.getX() + bx * b.getVitesseEffective() * k;
-            const double my = b.getY() + by * b.getVitesseEffective() * k;
-            const double ox = o->getX() + std::cos(o->getOrientation()) * o->getVitesseEffective() * k;
-            const double oy = o->getY() - std::sin(o->getOrientation()) * o->getVitesseEffective() * k;
-
-            if (std::hypot(mx - ox, my - oy) < seuil) {
-                const double rx = o->getX() - b.getX();
-                const double ry = o->getY() - b.getY();
-                const double cote = bx * ry - by * rx;
-                b.setOrientation(b.getOrientation() + (cote > 0. ? pi / 4. : -pi / 4.));
-                return; // Un seul ajustement par pas.
-            }
-        }
-    }
+         double d = std::sqrt( (mx-ox)*(mx-ox) + (my-oy)*(my-oy) );
+         if ( d < seuil ) {                                   // collision prévue
+            b.setOrientation( b.getOrientation() + M_PI/2. );
+            return;                                           // une seule déviation par pas
+         }
+      }
+   }
 }
