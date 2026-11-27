@@ -31,21 +31,25 @@ void Milieu::step(void)
 
    for (size_t i = 0; i < listeBestioles.size(); i++)
    {
-      for (size_t j = i + 1; j < listeBestioles.size(); j++)
+     // for (size_t j = i + 1; j < listeBestioles.size(); j++) // 
+      for (size_t j  = 0; i < listeBestioles.size(); i++)
       {
-         Bestiole &a = listeBestioles[i]; // Bestiole 1
-         Bestiole &b = listeBestioles[j]; // Bestiole 2
+         if (i != j) {
+            Bestiole &a = listeBestioles[i]; // Bestiole 1
+            Bestiole &b = listeBestioles[j]; // Bestiole 2
 
-         if (!a.enCollision(b))
-            continue;
+            if (!a.enCollision(b))
+               continue;
 
-         a.collision(b);
-         b.collision(a);
+            a.collision(b);
+            b.collision(a);
 
-         if (a.estMorte())
-            ++mortsCollision;
-         if (b.estMorte())
-            ++mortsCollision;
+            if (a.estMorte())
+               ++mortsCollision;
+            if (b.estMorte())
+               ++mortsCollision;
+         }
+        
       }
    }
 
@@ -70,6 +74,12 @@ void Milieu::step(void)
          it->mourir();
          ++mortsAge; // se sabe la causa
       }
+      
+      if (Aleatoire::evenement(0.0003))
+      {
+         it->clone();
+      }
+
 
    }
 
