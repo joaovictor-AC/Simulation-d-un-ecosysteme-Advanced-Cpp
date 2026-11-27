@@ -3,7 +3,7 @@
 #include "Bestiole.h"
 #include <cmath>
 
-void Gregaire::agir( Bestiole & b, const std::vector<Bestiole*> & proches, Bestiole * )
+void Gregaire::agir( Bestiole & b, const std::vector<Bestiole*> & proches, Bestiole * plusProche)
 {
    if ( proches.empty() ) return;
 
