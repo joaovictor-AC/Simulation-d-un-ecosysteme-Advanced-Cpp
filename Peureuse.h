@@ -5,16 +5,10 @@
 
 class Peureuse : public Comportement
 {
-<<<<<<< HEAD
 private:
    bool init = false;
    double vitesseCroisiere = 0.;
    int toursFuite = 0;
-=======
-private :
-   static const int NB_MAX = 3;           // seuil de "trop de bestioles"
-   static constexpr double FACTEUR = 3.;  // vive allure
->>>>>>> 5db0574305a8ec92db2f0d0e7d17e2f9a476114a
 
 public :
    void agir( Bestiole & b, const std::vector<Bestiole*> & proches, Bestiole * plusProche ) override;

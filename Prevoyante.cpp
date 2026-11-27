@@ -11,18 +11,12 @@ void Prevoyante::agir( Bestiole & b, const std::vector<Bestiole*> & proches, Bes
 
    for ( Bestiole * o : proches ) {
 
-<<<<<<< HEAD
       for ( int k = 1; k <= Bestiole::HORIZON; ++k ) {
          // positions dans k pas (repère image : y vers le bas)
          double mx = b.getX() + std::cos( b.getOrientation() ) * b.getVitesseEffective() * k;
          double my = b.getY() - std::sin( b.getOrientation() ) * b.getVitesseEffective() * k;
          double ox = o->getX() + std::cos( o->getOrientation() ) * o->getVitesseEffective() * k;
          double oy = o->getY() - std::sin( o->getOrientation() ) * o->getVitesseEffective() * k;
-=======
-      // direction de la voisine
-      double ox =  std::cos( o->getOrientation() );
-      double oy = -std::sin( o->getOrientation() );
->>>>>>> 5db0574305a8ec92db2f0d0e7d17e2f9a476114a
 
       // trajectoires parallèles : elles ne se croisent pas
       double det = -bx * oy + ox * by;
