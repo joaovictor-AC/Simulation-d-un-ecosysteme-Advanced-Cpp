@@ -3,17 +3,10 @@
 #include "Bestiole.h"
 #include <cmath>
 
-void Peureuse::agir( Bestiole & b, const std::vector<Bestiole*> & proches, Bestiole * )
+void Peureuse::agir( Bestiole & b, const std::vector<Bestiole*> & proches, Bestiole * plusProche )
 {
-   if ( !init ) { vitesseCroisiere = b.getVitesse(); init = true; }
-
-   if ( toursFuite > 0 ) {                                   // en fuite
-      if ( --toursFuite == 0 )
-         b.setVitesse( vitesseCroisiere );                   // retour à la croisière
-   }
-   else if ( static_cast<int>( proches.size() ) > NB_MAX ) { // déclenchement
-      b.setOrientation( b.getOrientation() + M_PI );
-      b.setVitesse( vitesseCroisiere * FACTEUR_FUITE );
-      toursFuite = DUREE_FUITE;
+   if ( static_cast<int>( proches.size() ) > NB_MAX ) {
+      b.setOrientation( b.getOrientation() + M_PI );   // direction opposée
+      b.setVitesseEffective( MAX_VITESSE );                  // vive allure
    }
 }

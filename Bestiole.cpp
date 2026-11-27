@@ -168,4 +168,4 @@ bool Bestiole::jeTeVois( const Bestiole & b ) const
    return ( dist <= LIMITE_VUE );
  
 }
- 
+
