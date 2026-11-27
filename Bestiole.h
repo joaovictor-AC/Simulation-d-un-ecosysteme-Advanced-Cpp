@@ -67,6 +67,8 @@ public :
    double getVitesse( void ) const { return vitesse; }
    double getTaille( void ) const { return taille; }
    int    getAge( void ) const { return age; }
+   void setOrientation( double o );
+   void setVitesse( double v ) { vitesse = v; }
  
    friend bool operator==( const Bestiole & b1, const Bestiole & b2 );
  
