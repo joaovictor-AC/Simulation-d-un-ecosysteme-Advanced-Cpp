@@ -1,12 +1,11 @@
 #ifndef BESTIOLE_H
 #define BESTIOLE_H
 #include "UImg.h"
-#include "ConfigParams.h"
+#include "Comportement.h"
 #include "Equipement.h"
 #include <memory>
 #include <vector>
 class Milieu;
-class Comportement;
 class Bestiole;
 struct Detection {
     std::vector<const Bestiole*> proches;
@@ -19,12 +18,14 @@ class Bestiole {
     int ageLimite;
     double x = 0., y = 0.; // Positions reelles pour conserver les petits deplacements.
     double orientation, vitesse, vitesseCroisiere;
+    double taille, probaMortCollision;
     bool marqueeMorte = false;
-    ConfigParams config;
     std::unique_ptr<Comportement> comportement;
     std::unique_ptr<Equipement> equipement;
 public:
-    explicit Bestiole(const ConfigParams& = ConfigParams());
+    Bestiole(); // Age limite et vitesse de croisiere tires au hasard.
+    explicit Bestiole(int ageLimite, double vitesseCroisiere = 2.,
+                      double taille = 16., double probaMortCollision = 0.1);
     Bestiole(const Bestiole&); // Nouvelle identite, copie profonde de l'etat.
     Bestiole& operator=(const Bestiole&); // Conserve l'identite du destinataire.
     Bestiole(Bestiole&&) noexcept;
@@ -54,7 +55,7 @@ public:
     int getAgeLimite() const { return ageLimite; }
     double getX() const { return x; }
     double getY() const { return y; }
-    double getTaille() const { return config.taille; }
+    double getTaille() const { return taille; }
     double getOrientation() const { return orientation; }
     double getVitesse() const { return vitesse; }
     double getVitesseCroisiere() const { return vitesseCroisiere; }
@@ -64,11 +65,12 @@ public:
     BehaviorType getTypeComportement() const;
     const Comportement& getComportement() const;
     bool possede(TypeEquipement type) const;
-    void equiperYeux();
-    void equiperOreilles();
-    void equiperCarapace();
-    void equiperNageoires();
-    void equiperCamouflage();
+    // Ouverture des yeux en radians (pi/2 par defaut).
+    void equiperYeux(double distance = 80., double angle = 1.5707963267948966, double gamma = 0.8);
+    void equiperOreilles(double distance = 50., double gamma = 0.6);
+    void equiperCarapace(double omega = 2., double eta = 1.5);
+    void equiperNageoires(double nu = 1.5);
+    void equiperCamouflage(double valeur = 0.5);
     void initCoords(int xLim, int yLim);
     void draw(UImg&) const;
     friend bool operator==(const Bestiole& a, const Bestiole& b) { return a.id == b.id; }

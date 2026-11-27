@@ -7,20 +7,28 @@
 #include <stdexcept>
 #include <utility>
 
+namespace { constexpr double PI = 3.14159265358979323846; }
+
 int Bestiole::next = 0;
 
-Bestiole::Bestiole(const ConfigParams& c)
-    : id(++next), ageLimite(0), orientation(0.), vitesse(0.), vitesseCroisiere(0.), config(c),
+Bestiole::Bestiole()
+    : Bestiole(Aleatoire::entier(1000, 2000), Aleatoire::reel(1., 4.)) {}
+
+Bestiole::Bestiole(int ageLimite, double vitesseCroisiere, double taille, double probaMortCollision)
+    : id(++next), ageLimite(ageLimite), orientation(Aleatoire::reel(0., 2. * PI)),
+      vitesse(vitesseCroisiere), vitesseCroisiere(vitesseCroisiere),
+      taille(taille), probaMortCollision(probaMortCollision),
       equipement(new SansEquipement) {
-    config.valider();
-    ageLimite = Aleatoire::entier(config.ageLimiteMin, config.ageLimiteMax);
-    orientation = Aleatoire::reel(0., 2. * PI);
-    vitesse = vitesseCroisiere = Aleatoire::reel(config.vitesseMin, config.vitesseMax);
-    comportement = creerComportement(BehaviorType::GREGAIRE, config);
+    if (ageLimite <= 0 || !std::isfinite(vitesseCroisiere) || vitesseCroisiere < 0. ||
+        !std::isfinite(taille) || taille <= 0. || !std::isfinite(probaMortCollision) ||
+        probaMortCollision < 0. || probaMortCollision > 1.)
+        throw std::invalid_argument("Parametres de Bestiole invalides");
+    comportement = creerComportement(BehaviorType::GREGAIRE);
 }
 Bestiole::Bestiole(const Bestiole& b)
     : id(++next), age(b.age), ageLimite(b.ageLimite), x(b.x), y(b.y), orientation(b.orientation),
-      vitesse(b.vitesse), vitesseCroisiere(b.vitesseCroisiere), marqueeMorte(b.marqueeMorte), config(b.config),
+      vitesse(b.vitesse), vitesseCroisiere(b.vitesseCroisiere), taille(b.taille),
+      probaMortCollision(b.probaMortCollision), marqueeMorte(b.marqueeMorte),
       comportement(b.comportement->clone()), equipement(b.equipement->clone()) {}
 Bestiole& Bestiole::operator=(const Bestiole& b) {
     if (this != &b) {
@@ -107,14 +115,14 @@ void Bestiole::setComportement(std::unique_ptr<Comportement> c) {
     vitesse = vitesseCroisiere;
 }
 void Bestiole::setComportement(const Comportement& c) { setComportement(c.clone()); }
-void Bestiole::setComportement(BehaviorType type) { setComportement(creerComportement(type, config)); }
+void Bestiole::setComportement(BehaviorType type) { setComportement(creerComportement(type)); }
 void Bestiole::setOrientation(double angle) {
     if (!std::isfinite(angle)) throw std::invalid_argument("Orientation non finie");
     orientation = std::fmod(angle, 2. * PI);
     if (orientation < 0.) orientation += 2. * PI;
 }
 void Bestiole::setVitesse(double valeur) {
-    if (!std::isfinite(valeur) || valeur < 0. || !std::isfinite(valeur * config.nu))
+    if (!std::isfinite(valeur) || valeur < 0. || !std::isfinite(equipement->vitesse(valeur)))
         throw std::invalid_argument("Vitesse invalide");
     vitesse = valeur;
 }
@@ -124,25 +132,30 @@ void Bestiole::setPosition(double px, double py) {
     y = py;
 }
 double Bestiole::getVitesseEffective() const { return equipement->vitesse(vitesse); }
-double Bestiole::getProbaMortCollision() const { return equipement->probaMort(config.probaMortCollision); }
+double Bestiole::getProbaMortCollision() const { return equipement->probaMort(probaMortCollision); }
 double Bestiole::getCamouflage() const { return equipement->camouflage(); }
 BehaviorType Bestiole::getTypeComportement() const { return comportement->type(); }
 const Comportement& Bestiole::getComportement() const { return *comportement; }
 bool Bestiole::possede(TypeEquipement type) const { return equipement->possede(type); }
-void Bestiole::equiperYeux() {
-    if (!possede(TypeEquipement::YEUX)) equipement.reset(new Yeux(std::move(equipement), config));
+void Bestiole::equiperYeux(double distance, double angle, double gamma) {
+    // La copie preserve les equipements existants si les nouveaux parametres sont invalides.
+    if (!possede(TypeEquipement::YEUX)) equipement.reset(new Yeux(equipement->clone(), distance, angle, gamma));
 }
-void Bestiole::equiperOreilles() {
-    if (!possede(TypeEquipement::OREILLES)) equipement.reset(new Oreilles(std::move(equipement), config));
+void Bestiole::equiperOreilles(double distance, double gamma) {
+    if (!possede(TypeEquipement::OREILLES)) equipement.reset(new Oreilles(equipement->clone(), distance, gamma));
 }
-void Bestiole::equiperCarapace() {
-    if (!possede(TypeEquipement::CARAPACE)) equipement.reset(new Carapace(std::move(equipement), config));
+void Bestiole::equiperCarapace(double omega, double eta) {
+    if (!possede(TypeEquipement::CARAPACE)) equipement.reset(new Carapace(equipement->clone(), omega, eta));
 }
-void Bestiole::equiperNageoires() {
-    if (!possede(TypeEquipement::NAGEOIRES)) equipement.reset(new Nageoires(std::move(equipement), config));
+void Bestiole::equiperNageoires(double nu) {
+    if (possede(TypeEquipement::NAGEOIRES)) return;
+    std::unique_ptr<Equipement> nouveau(new Nageoires(equipement->clone(), nu));
+    if (!std::isfinite(nouveau->vitesse(vitesse)) || !std::isfinite(nouveau->vitesse(vitesseCroisiere)))
+        throw std::invalid_argument("Vitesse effective trop grande");
+    equipement = std::move(nouveau);
 }
-void Bestiole::equiperCamouflage() {
-    if (!possede(TypeEquipement::CAMOUFLAGE)) equipement.reset(new Camouflage(std::move(equipement), config));
+void Bestiole::equiperCamouflage(double valeur) {
+    if (!possede(TypeEquipement::CAMOUFLAGE)) equipement.reset(new Camouflage(equipement->clone(), valeur));
 }
 void Bestiole::initCoords(int xLim, int yLim) {
     if (xLim <= 0 || yLim <= 0) throw std::invalid_argument("Dimensions du milieu invalides");
