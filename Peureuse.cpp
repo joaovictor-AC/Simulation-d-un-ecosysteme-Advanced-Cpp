@@ -7,6 +7,6 @@ void Peureuse::agir( Bestiole & b, const std::vector<Bestiole*> & proches, Besti
 {
    if ( static_cast<int>( proches.size() ) > NB_MAX ) {
       b.setOrientation( b.getOrientation() + M_PI );   // direction opposée
-      b.setVitesseEffective( MAX_VITESSE );                  // vive allure
+      // b.setVitesseEffective( getVitesseMax(MAX_VITESSE) );                  // vive allure
    }
 }
