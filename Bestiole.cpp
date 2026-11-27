@@ -43,7 +43,7 @@ Bestiole::Bestiole()
 Bestiole::Bestiole(int ageLimite, double vitesseCroisiere, double taille, double probaMortCollision)
     : id(++next), ageLimite(ageLimite), orientation(Aleatoire::reel(0., 2. * PI)),
       vitesse(vitesseCroisiere), vitesseCroisiere(vitesseCroisiere),
-      taille(taille), probaMortCollision(probaMortCollision), comportement(new Kamikaze)
+      taille(taille), probaMortCollision(probaMortCollision), comportement(new Gregaire)
 {
     if (ageLimite <= 0 || !std::isfinite(vitesseCroisiere) || vitesseCroisiere < 0. ||
         !std::isfinite(taille) || taille <= 0. || !std::isfinite(probaMortCollision) ||
@@ -82,14 +82,6 @@ Bestiole Bestiole::clone() const
     enfant.marqueeMorte = false;
     return enfant;
 }
-// void Bestiole::action(Milieu &milieu)
-// {
-//     if (estMorte())
-//         return;
-//     // Le Milieu initial n'expose pas sa population : il gere seulement le mouvement.
-//     // Les interactions restent disponibles via detecterProches(), agir() et collision().
-//     bouge(milieu.getWidth(), milieu.getHeight());
-// }
 
 void Bestiole::action( Milieu & monMilieu )
 {

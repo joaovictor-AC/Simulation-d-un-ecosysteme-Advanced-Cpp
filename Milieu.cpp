@@ -30,8 +30,37 @@ Milieu::~Milieu( void )
 void Milieu::step( void )
 {
 
-   cimg_forXY( *this, x, y ) fillC( x, y, 0, white[0], white[1], white[2] );
-   for ( std::vector<Bestiole>::iterator it = listeBestioles.begin() ; it != listeBestioles.end() ; ++it )
+   cimg_forXY(*this, x, y) fillC(x, y, 0, white[0], white[1], white[2]);
+
+   //////////////// COLLISION ////////////////////////////////
+
+   for (size_t i = 0; i < listeBestioles.size(); i++)
+   {
+     // for (size_t j = i + 1; j < listeBestioles.size(); j++) // 
+      for (size_t j  = 0; i < listeBestioles.size(); i++)
+      {
+         if (i != j) {
+            Bestiole &a = listeBestioles[i]; // Bestiole 1
+            Bestiole &b = listeBestioles[j]; // Bestiole 2
+
+            if (!a.enCollision(b))
+               continue;
+
+            a.collision(b);
+            b.collision(a);
+
+            if (a.estMorte())
+               ++mortsCollision;
+            if (b.estMorte())
+               ++mortsCollision;
+         }
+        
+      }
+   }
+
+   ////////////////////////////////////////////////////////////////
+
+   for (std::vector<Bestiole>::iterator it = listeBestioles.begin(); it != listeBestioles.end(); ++it)
    {
 
       it->action( *this );
@@ -39,9 +68,23 @@ void Milieu::step( void )
 
    } // for
 
-  for ( std::vector<Bestiole>::iterator it = listeBestioles.begin(); it != listeBestioles.end(); ++it )
-  {
-   if ( it->estMorte() ) continue;   // ya murió en este paso (colisión)
+   for (std::vector<Bestiole>::iterator it = listeBestioles.begin(); it != listeBestioles.end(); ++it)
+   {
+      if (it->estMorte())
+         continue; // ya murió en este paso (colisión)
+
+      it->vieillir();
+      if (it->getAge() >= it->getAgeLimite())
+      {
+         it->mourir();
+         ++mortsAge; // se sabe la causa
+      }
+      
+      if (Aleatoire::evenement(0.0003))
+      {
+         it->clone();
+      }
+
 
    it->vieillir();
    if ( it->getAge() >= it->getAgeLimite() ) {
