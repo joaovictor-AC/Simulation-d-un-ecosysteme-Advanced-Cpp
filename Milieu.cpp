@@ -2,6 +2,7 @@
 #include "Aleatoire.h"
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
 
 const T Milieu::white[] = {(T)255, (T)255, (T)255};
 
@@ -72,7 +73,14 @@ void Milieu::step(void)
 
    }
 
-   if (Aleatoire::evenement(0.8)) // Juste pour tester
+   // Les parcours sont termines : les effacements ne peuvent plus invalider leurs iterateurs.
+   listeBestioles.erase(
+      std::remove_if(listeBestioles.begin(), listeBestioles.end(),
+                     [](const Bestiole& b) { return b.estMorte(); }),
+      listeBestioles.end());
+
+      
+   if (Aleatoire::evenement(0.02))// Juste pour tester
    {
       addMember(Bestiole());
       listeBestioles.back().draw(*this);
