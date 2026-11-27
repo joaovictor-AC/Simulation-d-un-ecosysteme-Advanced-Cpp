@@ -1,6 +1,7 @@
 #include "Aquarium.h"
 #include "Milieu.h"
 #include "Bestiole.h"
+#include "FabriqueBestioles.h"          
 
 #include <iostream>
 
@@ -73,11 +74,20 @@ int main()
             << endl;
        return 1;
    }
+
+   DistributionComportement   distribution = {
+      { TypeComportement::GREGAIRE,   static_cast<double>( pGregaire ) },
+      { TypeComportement::PEUREUSE,   static_cast<double>( pPeureuse ) },
+      { TypeComportement::KAMIKAZE,   static_cast<double>( pKamikaze ) },
+      { TypeComportement::PREVOYANTE, static_cast<double>( pPrevoyante ) },
+      { TypeComportement::MULTIPLE,   static_cast<double>( pMultiple ) }
+   };
+   FabriqueBestioles          fabrique( distribution );
    
-   Aquarium       ecosysteme( 640, 480, 30 );
+   Aquarium       ecosysteme( 1500, 1200, 30 );
 
    for ( int i = 1; i <= 20; ++i )
-      ecosysteme.getMilieu().addMember( Bestiole() );
+      ecosysteme.getMilieu().addMember( fabrique.creerBestiole() );  
    ecosysteme.run();
 
 

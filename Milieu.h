@@ -30,12 +30,13 @@ public :
    int getWidth( void ) const { return width; };
    int getHeight( void ) const { return height; };
 
-   std::vector<Bestiole> & getBestioles( void ) { return listeBestioles; };   // <-- À AJOUTER
-
    int getMortsAge( void ) const { return mortsAge; }
    int getMortsCollision( void ) const { return mortsCollision; }
 
    void step( void );
+
+   // Population du milieu (utilisée par Bestiole::action pour la perception)
+   std::vector<Bestiole> & getBestioles( void ) { return listeBestioles; }
 
    void addMember( const Bestiole & b ) { listeBestioles.push_back(b); listeBestioles.back().initCoords(width, height); }
    int nbVoisins( const Bestiole & b );
