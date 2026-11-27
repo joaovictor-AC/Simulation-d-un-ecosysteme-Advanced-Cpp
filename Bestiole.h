@@ -94,6 +94,8 @@ public:
     double getTaille() const { return taille; }
     double getOrientation() const { return orientation; }
     double getVitesse() const { return vitesse; }
+    double getVitesseMax() const { return MAX_VITESSE; }
+
     double getVitesseCroisiere() const { return vitesseCroisiere; }
     double getVitesseEffective() const;
     double getProbaMortCollision() const;
