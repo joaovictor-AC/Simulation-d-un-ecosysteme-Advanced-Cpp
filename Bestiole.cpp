@@ -114,21 +114,6 @@ void Bestiole::action( Milieu & monMilieu )
 }
  
  
-bool Bestiole::vieillir( void )
-{
- 
-   if ( !vivante ) return false;
- 
-   ++age;
-   if ( age >= ageLimite ) {
-      vivante = false;
-      return true;
-   }
-   return false;
- 
-}
- 
- 
 void Bestiole::rebondir( void )
 {
  
@@ -169,3 +154,11 @@ bool Bestiole::jeTeVois( const Bestiole & b ) const
  
 }
 
+void Bestiole::setOrientation( double o )
+{
+   // se lleva el ángulo a [0 ; 2pi[
+   o = std::fmod( o, 2.*M_PI );
+   if ( o < 0. ) o += 2.*M_PI;
+   orientation = o;
+}
+ 
