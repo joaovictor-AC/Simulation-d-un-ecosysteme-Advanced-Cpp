@@ -3,6 +3,7 @@
 #include "Comportement.h"
 #include "Aleatoire.h"
 #include "Gregaire.h"
+#include "Kamikaze.h"
 #include <cmath>
 #include <limits>
 #include <stdexcept>
@@ -31,19 +32,20 @@ Bestiole::Bestiole()
     equiperCamouflage(Aleatoire::reel(0.1, 0.9));
 }
 
-
+/////////////////////////////////////////////////////////////////////////////
 //// VERIFIER, COMMENCER AVEC LE COMPORTEMENT GREGAIRE
 
 Bestiole::Bestiole(int ageLimite, double vitesseCroisiere, double taille, double probaMortCollision)
     : id(++next), ageLimite(ageLimite), orientation(Aleatoire::reel(0., 2. * PI)),
       vitesse(vitesseCroisiere), vitesseCroisiere(vitesseCroisiere),
-      taille(taille), probaMortCollision(probaMortCollision), comportement(new Gregaire)
+      taille(taille), probaMortCollision(probaMortCollision), comportement(new Kamikaze)
 {
     if (ageLimite <= 0 || !std::isfinite(vitesseCroisiere) || vitesseCroisiere < 0. ||
         !std::isfinite(taille) || taille <= 0. || !std::isfinite(probaMortCollision) ||
         probaMortCollision < 0. || probaMortCollision > 1.)
         throw std::invalid_argument("Parametres de Bestiole invalides");
 }
+////////////////////////////////////////////////////////////////////////////
 
 Bestiole::Bestiole(const Bestiole &b)
     : id(++next), age(b.age), ageLimite(b.ageLimite), x(b.x), y(b.y), orientation(b.orientation),
